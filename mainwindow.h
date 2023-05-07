@@ -1,7 +1,9 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QGridLayout>
 #include <QMainWindow>
+#include <QPushButton>
 #include <QSqlDatabase>
 
 QT_BEGIN_NAMESPACE
@@ -13,6 +15,9 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
+ public slots:
+  bool Ask();
+
  public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
@@ -20,6 +25,12 @@ class MainWindow : public QMainWindow {
  private:
   QSqlDatabase dBase_;
   Ui::MainWindow *ui;
+  QGridLayout *layout_;
+  QPushButton *go_;
+
+  bool setConnection();
+  void setLayoutActions();
+  void setCategoryArea();
 };
 #endif  // MAINWINDOW_H
 

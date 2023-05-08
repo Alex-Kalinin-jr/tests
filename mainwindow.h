@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSqlDatabase>
+#include <set>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,12 +22,14 @@ class MainWindow : public QMainWindow {
  public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
+  void ClearQuestion();
 
  private:
   QSqlDatabase dBase_;
   Ui::MainWindow *ui;
   QGridLayout *layout_;
   QPushButton *go_;
+  std::set<int> asked_;
 
   bool setConnection();
   void setLayoutActions();

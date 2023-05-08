@@ -8,6 +8,7 @@ class AnswerGui : public QCheckBox {
   Q_OBJECT
  public:
   explicit AnswerGui(bool, QString, QWidget *parent = nullptr);
+  bool Compare() { return QAbstractButton::isChecked() == isRight_; }
 
  private:
   bool isRight_;

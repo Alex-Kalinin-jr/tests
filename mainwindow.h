@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow {
 
  public slots:
   bool Ask();
+  void Answer();
 
  public:
   MainWindow(QWidget *parent = nullptr);
@@ -25,10 +26,13 @@ class MainWindow : public QMainWindow {
   void ClearQuestion();
 
  private:
+  int layoutManager_ = 0;
+
   QSqlDatabase dBase_;
   Ui::MainWindow *ui;
   QGridLayout *layout_;
   QPushButton *go_;
+  QPushButton *answer_;
   std::set<int> asked_;
 
   bool setConnection();

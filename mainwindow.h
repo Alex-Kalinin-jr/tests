@@ -68,3 +68,9 @@ class MainWindow : public QMainWindow {
 
 // select * from question join answer on question.id = 2 and question.id =
 // answer.question_id and answer.is_it_right_answer = 1;
+
+// load data local infile '~/projects/tests/questions.txt' into table
+// questions.question;
+
+// load data local infile '~/projects/tests/answers.txt' into table
+// questions.answer;

@@ -30,7 +30,7 @@ bool MainWindow::Ask() {
   } while (asked_.count(static_cast<int>(rand)) || !query.next());
   asked_.emplace(rand);
   QString quest = query.value(0).toString();
-  layout_->addWidget(new QLabel(quest), 2, 0, 1, 4);
+  layout_->addWidget(new QLabel(quest), 2, 0, 1, 3);
 
   query.exec(
       QString("SELECT * FROM answer WHERE question_id = '%1';").arg(rand + 1));
@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
   setCategoryArea();
 
   bool ok = setConnection();
+  qDebug() << ok;
 }
 
 MainWindow::~MainWindow() { delete ui; }

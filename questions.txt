@@ -1,0 +1,2 @@
+1	aa	Which method is the fastest for indicating a widget???
+2	aa	executing the statement DELETE FROM t PARTITION (p0) is equivalent to:

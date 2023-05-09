@@ -32,6 +32,10 @@ bool MainWindow::Ask() {
   ClearQuestion();
   RefillQuestions();
   int idRequested = GenerateQuestionId();
+  if (idRequested == -1) {
+    statusBar()->showMessage("No questions");
+    return false;
+  }
 
   QSqlQuery query;
   query.exec(
@@ -154,10 +158,13 @@ void MainWindow::RefillQuestions() {
 }
 
 int MainWindow::GenerateQuestionId() {
-  int erased = std::rand() % askedChecker_[currentCategory_].size();
-  auto itr = askedChecker_[currentCategory_].begin();
-  std::advance(itr, erased);
-  int id = *itr;
-  askedChecker_[currentCategory_].erase(itr);
+  int id = -1;
+  if (askedChecker_[currentCategory_].size()) {
+    int erased = std::rand() % askedChecker_[currentCategory_].size();
+    auto itr = askedChecker_[currentCategory_].begin();
+    std::advance(itr, erased);
+    id = *itr;
+    askedChecker_[currentCategory_].erase(itr);
+  }
   return id;
 }

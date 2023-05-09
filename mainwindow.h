@@ -104,3 +104,5 @@ class MainWindow : public QMainWindow {
 
 // load data local infile '~/projects/tests/links.txt' into table
 // questions.link;
+
+// mysql <database> < outputfile.sql

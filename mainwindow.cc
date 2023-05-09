@@ -20,13 +20,17 @@ MainWindow::MainWindow(QWidget *parent)
   setLayoutActions();
   setCategoryArea();
 
-  bool ok = setConnection();
+  if (!setConnection()) {
+    statusBar()->showMessage("Db wasn't opened");
+  }
 
   for (int i = 0; i < categoryVector_.size(); ++i) {
     std::vector<int> internalVector(0);
     askedChecker_.push_back(internalVector);
   }
 }
+
+MainWindow::~MainWindow() { delete ui; }
 
 bool MainWindow::Ask() {
   ClearQuestion();
@@ -97,8 +101,6 @@ void MainWindow::ChangeCategory(int index) {
     currentCategory_ = index;
   }
 }
-
-MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::ClearQuestion() {
   int i = 2;

@@ -19,18 +19,40 @@ MainWindow::MainWindow(QWidget *parent)
   std::srand(time(0));
   setLayoutActions();
   setCategoryArea();
-
-  if (!setConnection()) {
-    statusBar()->showMessage("Db wasn't opened");
+  CreateActions();
+  dBaseConnectionData_ << "localhost"
+                       << "questions"
+                       << "student"
+                       << "student";
+  bool ok = setConnection();
+  if (!ok) {
+    statusBar()->showMessage("Db isn't opened");
   }
 
+  // forms vector of empty vectors
   for (int i = 0; i < categoryVector_.size(); ++i) {
     std::vector<int> internalVector(0);
     askedChecker_.push_back(internalVector);
   }
+
+  paramsWidget_ = new ParamsWidget();
+  connect(paramsWidget_, &ParamsWidget::DataChanged, this,
+          &MainWindow::ChangeConnectionParams);
 }
 
-MainWindow::~MainWindow() { delete ui; }
+MainWindow::~MainWindow() {
+  delete ui;
+  delete paramsWidget_;
+}
+
+void MainWindow::ChangeConnectionParams() {
+  dBaseConnectionData_ = paramsWidget_->GetData();
+  std::for_each(askedChecker_.begin(), askedChecker_.end(),
+                [](std::vector<int> &i) { i.clear(); });
+  dBase_.removeDatabase("QMYSQL");
+  dBase_.close();
+  setConnection();
+}
 
 bool MainWindow::Ask() {
   ClearQuestion();
@@ -112,12 +134,14 @@ void MainWindow::ClearQuestion() {
   }
 }
 
+void MainWindow::ChooseSession() { paramsWidget_->show(); }
+
 bool MainWindow::setConnection() {
   dBase_ = (QSqlDatabase::addDatabase("QMYSQL"));
-  dBase_.setHostName("localhost");
-  dBase_.setDatabaseName("questions");
-  dBase_.setUserName("student");
-  dBase_.setPassword("student");
+  dBase_.setHostName(dBaseConnectionData_[0]);
+  dBase_.setDatabaseName(dBaseConnectionData_[1]);
+  dBase_.setUserName(dBaseConnectionData_[2]);
+  dBase_.setPassword(dBaseConnectionData_[3]);
   return dBase_.open();
 }
 
@@ -126,6 +150,19 @@ void MainWindow::setLayoutActions() {
   layout_ = new QGridLayout();
   layout_->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   centralWidget()->setLayout(layout_);
+}
+
+void MainWindow::CreateActions() {
+  menuBar_ = menuBar();
+  menu_ = new QMenu("menu", this);
+  menuBar_->addMenu(menu_);
+
+  aConnect_ = new QAction("Session", this);
+  aCreateQuestion_ = new QAction("New question", this);
+
+  menu_->addAction(aConnect_);
+  connect(aConnect_, &QAction::triggered, this, &MainWindow::ChooseSession);
+  menu_->addAction(aCreateQuestion_);
 }
 
 void MainWindow::setCategoryArea() {

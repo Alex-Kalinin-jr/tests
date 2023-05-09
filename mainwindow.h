@@ -8,6 +8,8 @@
 #include <QSqlDatabase>
 #include <set>
 
+#include "paramswidget.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -18,9 +20,13 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public slots:
+  void ChangeConnectionParams();
+
+ private slots:
   bool Ask();
   void Answer();
   void ChangeCategory(int index);
+  void ChooseSession();
 
  public:
   MainWindow(QWidget *parent = nullptr);
@@ -37,19 +43,32 @@ class MainWindow : public QMainWindow {
   std::vector<QString> categoryVector_{"aa", "ab", "ac", "ad"};
   QComboBox *categoryBox_;
   int currentCategory_ = 0;
-
   std::vector<std::vector<int>> askedChecker_;
   /************end of category handling section************/
 
   QSqlDatabase dBase_;
+  // widget with params.
+  // when press ok -> validate and fill dBaseData
+  // dBaseData is used in setConnection...
+  ParamsWidget *paramsWidget_;
+  QStringList dBaseConnectionData_;
+
   Ui::MainWindow *ui;
   QGridLayout *layout_;
   QPushButton *go_;
   QPushButton *answer_;
-  std::set<int> asked_;
+
+  /************menu widgets************/
+  QMenuBar *menuBar_;
+  QMenu *menu_;
+  QAction *aConnect_;
+  QAction *aCreateQuestion_;
+  QAction *aCreateCategory_;
+  /************end of menu widgets************/
 
   bool setConnection();
   void setLayoutActions();
+  void CreateActions();
   void setCategoryArea();
   // checks an appropriate vector in "askedChecker_" accordingly to
   // "currentCategory_" and if it is empty, tries to fill it with ids of

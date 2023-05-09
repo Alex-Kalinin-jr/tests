@@ -11,11 +11,13 @@ CONFIG += c++11
 SOURCES += \
     answergui.cpp \
     main.cpp \
-    mainwindow.cc
+    mainwindow.cc \
+    paramswidget.cpp
 
 HEADERS += \
     answergui.h \
-    mainwindow.h
+    mainwindow.h \
+    paramswidget.h
 
 FORMS += \
     mainwindow.ui

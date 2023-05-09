@@ -22,9 +22,9 @@ ParamsWidget::ParamsWidget(QWidget *parent) : QWidget(parent) {
 
 QStringList &ParamsWidget::GetData() {
   data_.clear();
-  data_.append(userName_->text());
   data_.append(hostName_->text());
   data_.append(databaseName_->text());
+  data_.append(userName_->text());
   data_.append(password_->text());
   return data_;
 }

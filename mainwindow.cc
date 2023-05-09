@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
                        << "questions"
                        << "student"
                        << "student";
+  dBase_ = (QSqlDatabase::addDatabase("QMYSQL"));
   bool ok = setConnection();
   if (!ok) {
     statusBar()->showMessage("Db isn't opened");
@@ -49,9 +50,13 @@ void MainWindow::ChangeConnectionParams() {
   dBaseConnectionData_ = paramsWidget_->GetData();
   std::for_each(askedChecker_.begin(), askedChecker_.end(),
                 [](std::vector<int> &i) { i.clear(); });
-  dBase_.removeDatabase("QMYSQL");
   dBase_.close();
-  setConnection();
+  bool ok = setConnection();
+  if (ok) {
+    statusBar()->showMessage("db is opened");
+  } else {
+    statusBar()->showMessage("error while opening");
+  }
 }
 
 bool MainWindow::Ask() {
@@ -137,7 +142,6 @@ void MainWindow::ClearQuestion() {
 void MainWindow::ChooseSession() { paramsWidget_->show(); }
 
 bool MainWindow::setConnection() {
-  dBase_ = (QSqlDatabase::addDatabase("QMYSQL"));
   dBase_.setHostName(dBaseConnectionData_[0]);
   dBase_.setDatabaseName(dBaseConnectionData_[1]);
   dBase_.setUserName(dBaseConnectionData_[2]);

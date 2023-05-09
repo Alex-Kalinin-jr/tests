@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QComboBox>
 #include <QGridLayout>
 #include <QMainWindow>
 #include <QPushButton>
@@ -19,6 +20,7 @@ class MainWindow : public QMainWindow {
  public slots:
   bool Ask();
   void Answer();
+  void ChangeCategory(int index);
 
  public:
   MainWindow(QWidget *parent = nullptr);
@@ -27,6 +29,17 @@ class MainWindow : public QMainWindow {
 
  private:
   int layoutManager_ = 0;
+
+  /************category handling section************/
+  // linux, c++, sql, qt.
+  // For expanding do not forget to add a record to
+  // QComboBox in void MainWindow::setCategoryArea()
+  std::vector<QString> categoryVector_{"aa", "ab", "ac", "ad"};
+  QComboBox *categoryBox_;
+  int currentCategory_ = 0;
+
+  std::vector<std::vector<int>> askedChecker_;
+  /************end of category handling section************/
 
   QSqlDatabase dBase_;
   Ui::MainWindow *ui;
@@ -38,6 +51,13 @@ class MainWindow : public QMainWindow {
   bool setConnection();
   void setLayoutActions();
   void setCategoryArea();
+  // checks an appropriate vector in "askedChecker_" accordingly to
+  // "currentCategory_" and if it is empty, tries to fill it with ids of
+  // possible questions.
+  void RefillQuestions();
+  // checks an appropriate vector in "askedChecker_", erases one value from it
+  // and returns this value.
+  int GenerateQuestionId();
 };
 #endif  // MAINWINDOW_H
 
@@ -51,6 +71,13 @@ class MainWindow : public QMainWindow {
 //                    is_it_right_answer BOOL NOT NULL, PRIMARY KEY(id),
 //                    FOREIGN KEY(question_id) REFERENCES question(id),
 //                    index pn_user_index(`question_id`));
+
+// CREATE TABLE link(id BIGINT NOT NULL AUTO_INCREMENT,
+//                    question_id INT NOT NULL,
+//                    text VARCHAR(256) NOT NULL,
+//                    PRIMARY KEY(id),
+//                    FOREIGN KEY(question_id) REFERENCES question(id),
+//                    index pk_user_index(`question_id`));
 
 // insert into question
 //    value(1, 'aa', 'Test question. Should be 4 variants. D is the answer.');
@@ -74,3 +101,6 @@ class MainWindow : public QMainWindow {
 
 // load data local infile '~/projects/tests/answers.txt' into table
 // questions.answer;
+
+// load data local infile '~/projects/tests/links.txt' into table
+// questions.link;

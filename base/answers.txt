@@ -1,0 +1,18 @@
+0	1	isWidgetType()	1
+0	1	qobject_cast<QWidget *>()	0
+0	1	inherits("QWidget")	0
+0	2	 ALTER TABLE t TRUNCATE PARTITION (p0)	1
+0	2	 ALTER TABLE t PARTITION (p0)	0
+0	2	 ALTER TABLE t PARTITION p0	0
+0	2	 ALTER TABLE t TRUNCATE PARTITION p0	0
+0	3	mysql --local-infile=1 -u root -p	1
+0	3	mysql -u root -p	0
+0	4	"ctrl+x" then "fg". Further access by "jobs".	0
+0	4	"ctrl+z" then "fg". Further access by "jobs".	0
+0	4	"ctrl+x" then "bg". Further access by "jobs".	0
+0	4	"ctrl+z" then "bg". Further access by "jobs".	1
+0	4	"ctrl+z". Further access by "jobs".	0
+0	4	"ctrl+x". Further access by "jobs".	0
+0	5	QLayout->setBackground(QColor)	0
+0	5	QLayout->itemAtPosition(int, int)->setBackground(QColor)	0
+0	5	QLayout is not a visual element, it's a container that adjust location of contained widgets.\nYou can change background of QFrame or other widgets\nyou included QLayout into.	1

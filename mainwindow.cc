@@ -1,45 +1,60 @@
 ﻿#include "mainwindow.h"
 
-#include <QComboBox>
 #include <QDebug>
 #include <QLabel>
+#include <QLineEdit>
 #include <QRandomGenerator>
 #include <QSqlQuery>
 #include <algorithm>
+#include <iterator>
+#include <random>
 #include <vector>
 
 #include "answergui.h"
 #include "ui_mainwindow.h"
 
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow) {
+  ui->setupUi(this);
+  std::srand(time(0));
+  setLayoutActions();
+  setCategoryArea();
+
+  bool ok = setConnection();
+
+  for (int i = 0; i < categoryVector_.size(); ++i) {
+    std::vector<int> internalVector(0);
+    askedChecker_.push_back(internalVector);
+  }
+}
+
 bool MainWindow::Ask() {
   ClearQuestion();
+  RefillQuestions();
+  int idRequested = GenerateQuestionId();
+
   QSqlQuery query;
-  query.exec("SELECT COUNT(*) FROM question;");
-  if (!query.next()) {
-    return false;
-  }
-  int count = query.value(0).toInt();
-  if (asked_.size() >= count - 1) {
-    asked_.clear();
-  }
-  quint32 rand = 0;
-  do {
-    rand = QRandomGenerator::global()->bounded(count);
-    query.exec(
-        QString("SELECT text FROM question WHERE id = '%1';").arg(rand + 1));
-  } while (asked_.count(static_cast<int>(rand)) || !query.next());
-  asked_.emplace(rand);
+  query.exec(
+      QString("SELECT text FROM question WHERE id = '%1';").arg(idRequested));
+  query.next();
   QString quest = query.value(0).toString();
   layout_->addWidget(new QLabel(quest), 2, 0, 1, 3);
 
-  query.exec(
-      QString("SELECT * FROM answer WHERE question_id = '%1';").arg(rand + 1));
+  query.exec(QString("SELECT * FROM answer WHERE question_id = '%1';")
+                 .arg(idRequested));
   int i = 3;
   while (query.next()) {
-    quest = query.value(2).toString();
-    bool isItRight = query.value(3).toBool();
-    AnswerGui *chooseCheckBox = new AnswerGui(isItRight, quest, this);
-    layout_->addWidget(chooseCheckBox, i, 0, 1, 1);
+    AnswerGui *chooseCheckBox =
+        new AnswerGui(query.value(3).toBool(), query.value(2).toString(), this);
+    layout_->addWidget(chooseCheckBox, i, 0, 1, 3);
+    ++i;
+  }
+
+  query.exec(QString("SELECT text FROM link WHERE question_id = '%1';")
+                 .arg(idRequested));
+  while (query.next()) {
+    QLineEdit *chooseCheckBox = new QLineEdit(query.value(0).toString());
+    layout_->addWidget(chooseCheckBox, i, 0, 1, 3);
     ++i;
   }
   return true;
@@ -49,9 +64,13 @@ void MainWindow::Answer() {
   int i = 3;
   std::vector<int> wrongAnswers;
   QLayoutItem *layItem = layout_->itemAtPosition(i, 0);
-  while (layItem != nullptr) {
+  while (layItem != nullptr && layItem->widget()) {
     AnswerGui *buff = dynamic_cast<AnswerGui *>(layItem->widget());
-    if (!buff->Compare()) {
+    if (buff != nullptr && !buff->Compare()) {
+      // the first condition should stay first. There can be some links
+      // "QLineEdit" on layout after answer variants. They shouldn't be checked.
+      // If widget is not AnswerGui then buff will be nullptr after
+      // "dynamic_cast" and item will not be checked
       wrongAnswers.push_back(i - 2);
     }
     ++i;
@@ -69,14 +88,10 @@ void MainWindow::Answer() {
   statusBar()->showMessage(msg);
 }
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
-  ui->setupUi(this);
-  setLayoutActions();
-  setCategoryArea();
-
-  bool ok = setConnection();
-  qDebug() << ok;
+void MainWindow::ChangeCategory(int index) {
+  if (categoryVector_.size() > index) {
+    currentCategory_ = index;
+  }
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -108,16 +123,41 @@ void MainWindow::setLayoutActions() {
 }
 
 void MainWindow::setCategoryArea() {
-  QLabel *lCategory = new QLabel("Choose category");
+  QLabel *lCategory = new QLabel("Choose category", this);
   layout_->addWidget(lCategory, layoutManager_, 0, 1, 1);
   ++layoutManager_;
-  QComboBox *categoryBox = new QComboBox();
-  categoryBox->addItems({"linux", "c++"});
-  layout_->addWidget(categoryBox, layoutManager_, 0);
-  go_ = new QPushButton("Go");
+  categoryBox_ = new QComboBox(this);
+  categoryBox_->addItems({"linux", "c++", "sql", "qt"});
+  layout_->addWidget(categoryBox_, layoutManager_, 0);
+  connect(categoryBox_, SIGNAL(currentIndexChanged(int)), this,
+          SLOT(ChangeCategory(int)));
+
+  go_ = new QPushButton("Ask", this);
   layout_->addWidget(go_, layoutManager_, 1);
   connect(go_, SIGNAL(clicked()), this, SLOT(Ask()));
-  answer_ = new QPushButton("Answer");
+
+  answer_ = new QPushButton("Answer", this);
   layout_->addWidget(answer_, layoutManager_, 2);
   connect(answer_, SIGNAL(clicked()), this, SLOT(Answer()));
+}
+
+void MainWindow::RefillQuestions() {
+  if (askedChecker_[currentCategory_].empty()) {
+    QString a = QString("SELECT id FROM question WHERE category = '") +
+                categoryVector_[currentCategory_] + QString("';");
+    QSqlQuery query(a);
+    while (query.next()) {
+      int id = query.value(0).toInt();
+      askedChecker_[currentCategory_].push_back(id);
+    }
+  }
+}
+
+int MainWindow::GenerateQuestionId() {
+  int erased = std::rand() % askedChecker_[currentCategory_].size();
+  auto itr = askedChecker_[currentCategory_].begin();
+  std::advance(itr, erased);
+  int id = *itr;
+  askedChecker_[currentCategory_].erase(itr);
+  return id;
 }

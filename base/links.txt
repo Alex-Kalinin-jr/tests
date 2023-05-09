@@ -1,0 +1,2 @@
+0	3	https://stackoverflow.com/questions/59993844/error-loading-local-data-is-disabled-this-must-be-enabled-on-both-the-client
+0	4	https://linuxhint.com/send-process-background-linux/

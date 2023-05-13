@@ -3,3 +3,7 @@
 3	ac	When you cannot load data into table from file you use:\nSET GLOBAL local_infile=1;\nWhen you then reconnect to the server\nwhat should you write for loading success?
 4	aa	You launch the proccess in foreground.\nHow to send it to background in linux?
 5	ad	How to change the background of the QLayout?
+6	ab	Choose existing termins according to C++ standard:
+7	ab	Choose wrong expressions accordingly to §5/4 of standard:
+8	ab	The compiler may not perform inlining in such circumstances as:
+9	ab	// file1.c:\nint a;\nint b = 1;\nstatic int r = 7;\nextern int c;\n\n// file2.c:\nextern int a;\nextern double b;\nstatic int r = 8;\nextern int c;\n\nChoose right statements:

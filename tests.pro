@@ -12,12 +12,14 @@ SOURCES += \
     answergui.cpp \
     main.cpp \
     mainwindow.cc \
-    paramswidget.cpp
+    paramswidget.cpp \
+    writinggui.cpp
 
 HEADERS += \
     answergui.h \
     mainwindow.h \
-    paramswidget.h
+    paramswidget.h \
+    writinggui.h
 
 FORMS += \
     mainwindow.ui

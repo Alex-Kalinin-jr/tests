@@ -7,17 +7,21 @@
 #include <QSqlQuery>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <random>
-#include <vector>
 
 #include "answergui.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      writingWidget_(new WritingGui(this)) {
   ui->setupUi(this);
   std::srand(time(0));
-  setLayoutActions();
+  //  writingWidget_->setWindowModality(Qt::NonModal);
+  setCustomLayout();
+  setStatusBar(new QStatusBar);
   setCategoryArea();
   CreateActions();
   dBaseConnectionData_ << "localhost"
@@ -139,7 +143,30 @@ void MainWindow::ClearQuestion() {
   }
 }
 
+QString MainWindow::GetCategoryId(const int &i) { return categoryVector_[i]; }
+
+void MainWindow::CopyWidgetData(QComboBox *in) {
+  in->clear();
+  in->addItems(categoryBoxVector_);
+}
+
 void MainWindow::ChooseSession() { paramsWidget_->show(); }
+
+void MainWindow::WriteAnswerToDb() {
+  //  writingWidget_->show();
+  WritingGui tempDialog(this);
+  CopyWidgetData(tempDialog.GetCategoryPointer());
+  QStringList a;
+  switch (tempDialog.exec()) {
+    case QDialog::Accepted:
+      a = (tempDialog.GetFields());
+      qDebug() << a;
+      break;
+    default:
+    case QDialog::Rejected:
+      break;
+  }
+}
 
 bool MainWindow::setConnection() {
   dBase_.setHostName(dBaseConnectionData_[0]);
@@ -149,8 +176,7 @@ bool MainWindow::setConnection() {
   return dBase_.open();
 }
 
-void MainWindow::setLayoutActions() {
-  setStatusBar(new QStatusBar);
+void MainWindow::setCustomLayout() {
   layout_ = new QGridLayout();
   layout_->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   centralWidget()->setLayout(layout_);
@@ -167,6 +193,8 @@ void MainWindow::CreateActions() {
   menu_->addAction(aConnect_);
   connect(aConnect_, &QAction::triggered, this, &MainWindow::ChooseSession);
   menu_->addAction(aCreateQuestion_);
+  connect(aCreateQuestion_, &QAction::triggered, this,
+          &MainWindow::WriteAnswerToDb);
 }
 
 void MainWindow::setCategoryArea() {
@@ -174,7 +202,7 @@ void MainWindow::setCategoryArea() {
   layout_->addWidget(lCategory, layoutManager_, 0, 1, 1);
   ++layoutManager_;
   categoryBox_ = new QComboBox(this);
-  categoryBox_->addItems({"linux", "c++", "sql", "qt"});
+  categoryBox_->addItems(categoryBoxVector_);
   layout_->addWidget(categoryBox_, layoutManager_, 0);
   connect(categoryBox_, SIGNAL(currentIndexChanged(int)), this,
           SLOT(ChangeCategory(int)));

@@ -16,3 +16,27 @@
 0	5	QLayout->setBackground(QColor)	0
 0	5	QLayout->itemAtPosition(int, int)->setBackground(QColor)	0
 0	5	QLayout is not a visual element, it's a container that adjust location of contained widgets.\nYou can change background of QFrame or other widgets\nyou included QLayout into.	1
+0	6	Undefined behaviour	1
+0	6	Implementation-defined behaviour	1
+0	6	Unspecified behaviour	1
+0	6	Specified behaviour	0
+0	6	Enormous behaviour	0
+0	6	Undetermined behaviour	0
+0	7	i++ * ++i;	1
+0	7	i = ++i;	1
+0	7	i = (i, ++i, 1) + 1;	0
+0	7	j = (++i, i++, j*i);	0
+0	7	++i = 2;	1
+0	7	i = (++i,i++,i);	0
+0	8	If a function contains a loop. (for, while and do-while)	1
+0	8	If a function contains static variables.	1
+0	8	If a function contains conditional statements	0
+0	8	If a function is recursive.	1
+0	8	If a function return type is other than void, and the return statement doesn’t exist in a function body.	1
+0	8	If a function contains a switch or goto statement.	1
+0	9	"extern" shows that this is just a definition of variable.	0
+0	9	"extern" shows that this is just a declaration of variable.	1
+0	9	Program would not be compiled because var "int c" is not defined.	1
+0	9	Var "int a" is correct and program would be executed with val "a = 0" if compiled.	1
+0 	9	Var "b" would be "int" due to implicit type convertion	0
+0	9	Var "r" is correct in contex of program and each file use his own value: 7 for file1.c and 8 for file2.c.	1	

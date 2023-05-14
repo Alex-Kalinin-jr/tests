@@ -153,14 +153,13 @@ void MainWindow::CopyWidgetData(QComboBox *in) {
 void MainWindow::ChooseSession() { paramsWidget_->show(); }
 
 void MainWindow::WriteAnswerToDb() {
-  //  writingWidget_->show();
   WritingGui tempDialog(this);
   CopyWidgetData(tempDialog.GetCategoryPointer());
   QStringList a;
   switch (tempDialog.exec()) {
     case QDialog::Accepted:
       a = (tempDialog.GetFields());
-      qDebug() << a;
+      WriteToDb(a);
       break;
     default:
     case QDialog::Rejected:
@@ -238,4 +237,40 @@ int MainWindow::GenerateQuestionId() {
     askedChecker_[currentCategory_].erase(itr);
   }
   return id;
+}
+
+void MainWindow::WriteToDb(QStringList &answer) {
+  if (answer[0] == "") return;
+  int checker = 0;
+  for (auto a = answer.begin() + 2; a != answer.end(); a += 2) {
+    if (*a != "") {
+      checker = 1;
+      break;
+    }
+  }
+  if (checker == 0) return;
+
+  QString request =
+      QString("insert into question(id, category, text) VALUES(0, '%1', '%2');")
+          .arg(answer[1])
+          .arg(answer[0]);
+  QSqlQuery query;
+  query.exec(request);
+  request =
+      QString("select id from question where text = '%1';").arg(answer[0]);
+  query.exec(request);
+  if (query.next()) {
+    QString buffId = query.value(0).toString();
+    if (buffId != "") {
+      for (auto a = answer.begin() + 2; a != answer.end(); a += 2) {
+        if (*a != "") {
+          request = QString("insert into answer values(0, %1, '%2', %3);")
+                        .arg(buffId)
+                        .arg(*a)
+                        .arg(*(a + 1));
+          query.exec(request);
+        }
+      }
+    }
+  }
 }

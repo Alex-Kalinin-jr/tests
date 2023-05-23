@@ -26,7 +26,7 @@ void WritingGui::AddOneAnsw() {
       col_++);
   layout_->addWidget(new QLabel("True/false", this), row_++, col_--);
 
-  layout_->addWidget(new QLineEdit(), row_, col_++);
+  layout_->addWidget(new QTextEdit(), row_, col_++);
   layout_->addWidget(new QCheckBox(), row_++, col_--);
   layout_->addWidget(addAnswer_, row_++, col_);
 }
@@ -54,10 +54,10 @@ QStringList WritingGui::GetFields() {
       QLayoutItem *buffItem = layout_->itemAtPosition(row, col++);
       if (!buffItem) break;
       QWidget *temp_2(buffItem->widget());
-      QLineEdit *recordAnsw = qobject_cast<QLineEdit *>(temp_2);
+      QTextEdit *recordAnsw = qobject_cast<QTextEdit *>(temp_2);
       if (recordAnsw == nullptr) break;
 
-      answ << recordAnsw->text();
+      answ << recordAnsw->toPlainText();
       temp_2 = layout_->itemAtPosition(row++, col--)->widget();
       QCheckBox *isItRight(qobject_cast<QCheckBox *>(temp_2));
       QString buffStr;

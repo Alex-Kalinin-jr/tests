@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QObject>
 #include <QPushButton>
+#include <QTextEdit>
 #include <QWidget>
 
 #include "mainwindow.h"
@@ -27,7 +28,7 @@ class WritingGui : public QDialog {
   int firstAnswRow_ = 0;
   int questRow_ = 0;
   int countPresented_ = 0;
-  QLineEdit *question_;
+  QTextEdit *question_;
   QComboBox *category_;
   QGridLayout *layout_;
   QPushButton *addAnswer_;

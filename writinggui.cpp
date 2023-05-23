@@ -4,9 +4,10 @@
 #include <QLabel>
 
 WritingGui::WritingGui(QWidget *parent) : QDialog(parent) {
-  question_ = new QLineEdit(this);
+  question_ = new QTextEdit(this);
   category_ = new QComboBox(this);
   layout_ = new QGridLayout(this);
+  layout_->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   setLayout(layout_);
   row_ = 0;
   col_ = 0;
@@ -35,11 +36,11 @@ QStringList WritingGui::GetFields() {
   int row = questRow_;
   int col = 0;
   QWidget *temp_1(layout_->itemAtPosition(row, col++)->widget());
-  QLineEdit *record(qobject_cast<QLineEdit *>(temp_1));
+  QTextEdit *record(qobject_cast<QTextEdit *>(temp_1));
   if (!record) {
     return answ;
   }
-  answ << record->text();
+  answ << record->toPlainText();
   temp_1 = layout_->itemAtPosition(row++, col--)->widget();
   QComboBox *category(qobject_cast<QComboBox *>(temp_1));
   if (category) {
@@ -50,14 +51,13 @@ QStringList WritingGui::GetFields() {
 
     row = firstAnswRow_;
     do {
-      record = nullptr;
       QLayoutItem *buffItem = layout_->itemAtPosition(row, col++);
       if (!buffItem) break;
       QWidget *temp_2(buffItem->widget());
-      record = qobject_cast<QLineEdit *>(temp_2);
-      if (record == nullptr) break;
+      QLineEdit *recordAnsw = qobject_cast<QLineEdit *>(temp_2);
+      if (recordAnsw == nullptr) break;
 
-      answ << record->text();
+      answ << recordAnsw->text();
       temp_2 = layout_->itemAtPosition(row++, col--)->widget();
       QCheckBox *isItRight(qobject_cast<QCheckBox *>(temp_2));
       QString buffStr;

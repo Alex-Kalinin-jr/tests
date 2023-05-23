@@ -64,6 +64,7 @@ void MainWindow::ChangeConnectionParams() {
 }
 
 bool MainWindow::Ask() {
+  statusBar()->clearMessage();
   ClearQuestion();
   RefillQuestions();
   int idRequested = GenerateQuestionId();
@@ -242,6 +243,7 @@ int MainWindow::GenerateQuestionId() {
 void MainWindow::WriteToDb(QStringList &answer) {
   if (answer[0] == "") return;
   int checker = 0;
+  // checks whether there is at least one answer
   for (auto a = answer.begin() + 2; a != answer.end(); a += 2) {
     if (*a != "") {
       checker = 1;

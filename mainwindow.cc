@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       writingWidget_(new WritingGui(this)) {
   ui->setupUi(this);
   std::srand(time(0));
-  //  writingWidget_->setWindowModality(Qt::NonModal);
+
   setCustomLayout();
   setStatusBar(new QStatusBar);
   setCategoryArea();
@@ -78,7 +78,7 @@ bool MainWindow::Ask() {
       QString("SELECT text FROM question WHERE id = '%1';").arg(idRequested));
   query.next();
   QString quest = query.value(0).toString();
-  layout_->addWidget(new QLabel(quest), 2, 0, 1, 3);
+  layout_->addWidget(new QLabel(quest), 2, 0, 1, 10);
 
   query.exec(QString("SELECT * FROM answer WHERE question_id = '%1';")
                  .arg(idRequested));
@@ -86,7 +86,7 @@ bool MainWindow::Ask() {
   while (query.next()) {
     AnswerGui *chooseCheckBox =
         new AnswerGui(query.value(3).toBool(), query.value(2).toString(), this);
-    layout_->addWidget(chooseCheckBox, i, 0, 1, 3);
+    layout_->addWidget(chooseCheckBox, i, 0, 1, 10);
     ++i;
   }
 
@@ -94,7 +94,7 @@ bool MainWindow::Ask() {
                  .arg(idRequested));
   while (query.next()) {
     QLineEdit *chooseCheckBox = new QLineEdit(query.value(0).toString());
-    layout_->addWidget(chooseCheckBox, i, 0, 1, 3);
+    layout_->addWidget(chooseCheckBox, i, 0, 1, 10);
     ++i;
   }
   return true;
@@ -129,7 +129,7 @@ void MainWindow::Answer() {
 }
 
 void MainWindow::ChangeCategory(int index) {
-  if (categoryVector_.size() > index) {
+  if (static_cast<int>(categoryVector_.size()) > index) {
     currentCategory_ = index;
   }
 }

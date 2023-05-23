@@ -40,7 +40,9 @@ QStringList WritingGui::GetFields() {
   if (!record) {
     return answ;
   }
-  answ << record->toPlainText();
+  QString answText = record->toPlainText();
+  answText.replace('\t', "  ");
+  answ << answText;
   temp_1 = layout_->itemAtPosition(row++, col--)->widget();
   QComboBox *category(qobject_cast<QComboBox *>(temp_1));
   if (category) {
@@ -56,8 +58,9 @@ QStringList WritingGui::GetFields() {
       QWidget *temp_2(buffItem->widget());
       QTextEdit *recordAnsw = qobject_cast<QTextEdit *>(temp_2);
       if (recordAnsw == nullptr) break;
-
-      answ << recordAnsw->toPlainText();
+      answText = recordAnsw->toPlainText();
+      answText.replace('\t', "  ");
+      answ << answText;
       temp_2 = layout_->itemAtPosition(row++, col--)->widget();
       QCheckBox *isItRight(qobject_cast<QCheckBox *>(temp_2));
       QString buffStr;

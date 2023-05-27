@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
   void ChangeCategory(int index);
   void ChooseSession();
   void WriteAnswerToDb();
+  void CreateCategory();
 
  public:
   MainWindow(QWidget *parent = nullptr);
@@ -49,8 +50,8 @@ class MainWindow : public QMainWindow {
   // linux, c++, sql, qt.
   // For expanding do not forget to add a record to
   // QComboBox in void MainWindow::setCategoryArea()
-  std::vector<QString> categoryVector_{"aa", "ab", "ac", "ad"};
-  QStringList categoryBoxVector_{"linux", "c++", "sql", "qt"};
+  std::vector<QString> categoryVector_;
+  QStringList categoryBoxVector_;
 
   int currentCategory_ = 0;
   std::vector<std::vector<int>> askedChecker_;
@@ -89,5 +90,7 @@ class MainWindow : public QMainWindow {
   // and returns this value.
   int GenerateQuestionId();
   void WriteToDb(QStringList &answer);
+  void FillCategoryFromDb();
+  void WriteCategoryToDb(QStringList &);
 };
 #endif  // MAINWINDOW_H

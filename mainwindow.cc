@@ -33,7 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
   if (!ok) {
     statusBar()->showMessage("Db isn't opened");
   }
-
+  // forms category content requesting to db
+  FillCategoryFromDb();
+  CopyWidgetData(categoryBox_);
   // forms vector of empty vectors
   for (int i = 0; i < categoryVector_.size(); ++i) {
     std::vector<int> internalVector(0);
@@ -57,6 +59,7 @@ void MainWindow::ChangeConnectionParams() {
   dBase_.close();
   bool ok = setConnection();
   if (ok) {
+    FillCategoryFromDb();
     statusBar()->showMessage("db is opened");
   } else {
     statusBar()->showMessage("error while opening");
@@ -168,6 +171,30 @@ void MainWindow::WriteAnswerToDb() {
   }
 }
 
+void MainWindow::CreateCategory() {
+  NewCategoryGui asker;
+  if (!asker.exec()) {
+    statusBar()->showMessage("cancelled");
+  } else {
+    QStringList buff = asker.GetFields();
+    QString request =
+        QString("insert into category(name, shortName) values('%1', '%2');")
+            .arg(buff[0])
+            .arg(buff[1]);
+    QSqlQuery query;
+
+    if (!query.exec(request)) {
+      statusBar()->showMessage("cancelled");
+    } else {
+      FillCategoryFromDb();
+      CopyWidgetData(categoryBox_);
+      std::vector<int> internalVector(0);
+      askedChecker_.push_back(internalVector);
+      statusBar()->showMessage("written");
+    }
+  }
+}
+
 bool MainWindow::setConnection() {
   dBase_.setHostName(dBaseConnectionData_[0]);
   dBase_.setDatabaseName(dBaseConnectionData_[1]);
@@ -189,12 +216,16 @@ void MainWindow::CreateActions() {
 
   aConnect_ = new QAction("Session", this);
   aCreateQuestion_ = new QAction("New question", this);
+  aCreateCategory_ = new QAction("New category", this);
 
   menu_->addAction(aConnect_);
   connect(aConnect_, &QAction::triggered, this, &MainWindow::ChooseSession);
   menu_->addAction(aCreateQuestion_);
   connect(aCreateQuestion_, &QAction::triggered, this,
           &MainWindow::WriteAnswerToDb);
+  menu_->addAction(aCreateCategory_);
+  connect(aCreateCategory_, &QAction::triggered, this,
+          &MainWindow::CreateCategory);
 }
 
 void MainWindow::setCategoryArea() {
@@ -274,5 +305,16 @@ void MainWindow::WriteToDb(QStringList &answer) {
         }
       }
     }
+  }
+}
+
+void MainWindow::FillCategoryFromDb() {
+  QSqlQuery query;
+  query.exec(QString("SELECT * FROM category;"));
+  categoryBoxVector_.clear();
+  categoryVector_.clear();
+  while (query.next()) {
+    categoryBoxVector_.push_back(query.value(1).toString());
+    categoryVector_.push_back(query.value(2).toString());
   }
 }

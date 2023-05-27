@@ -1,5 +1,13 @@
 ﻿#include <iostream>
 
+class Expr {
+
+public:
+Expr();
+void *operator new(size_t, void *p)
+};
+
+
 
 int main() {
   char a = 0;
@@ -11,3 +19,7 @@ int main() {
       std::cout<<"fail"<<std::endl;
     }
   return 0; }
+
+
+
+

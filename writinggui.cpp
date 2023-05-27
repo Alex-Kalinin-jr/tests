@@ -3,14 +3,21 @@
 #include <QCheckBox>
 #include <QLabel>
 
-WritingGui::WritingGui(QWidget *parent) : QDialog(parent) {
-  question_ = new QTextEdit(this);
-  category_ = new QComboBox(this);
+DialogGui::DialogGui(QWidget *parent) : QDialog(parent) {
+  ok_ = new QPushButton("Write", this);
+  cancel_ = new QPushButton("Cancel", this);
+  connect(ok_, SIGNAL(clicked()), SLOT(accept()));
+  connect(cancel_, SIGNAL(clicked()), SLOT(reject()));
   layout_ = new QGridLayout(this);
   layout_->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-  setLayout(layout_);
   row_ = 0;
   col_ = 0;
+}
+
+WritingGui::WritingGui(QWidget *parent) : DialogGui(parent) {
+  question_ = new QTextEdit(this);
+  category_ = new QComboBox(this);
+  setLayout(layout_);
   PutQuestionArea();
   addAnswer_ = new QPushButton("+", this);
   layout_->addWidget(addAnswer_, row_++, col_);
@@ -79,10 +86,28 @@ void WritingGui::PutQuestionArea() {
   questRow_ = row_;
   layout_->addWidget(question_, row_, col_++);
   layout_->addWidget(category_, row_++, col_--);
-  ok_ = new QPushButton("Write", this);
-  cancel_ = new QPushButton("Cancel", this);
-  connect(ok_, SIGNAL(clicked()), SLOT(accept()));
-  connect(cancel_, SIGNAL(clicked()), SLOT(reject()));
+  layout_->addWidget(ok_, row_, col_++);
+  layout_->addWidget(cancel_, row_++, col_--);
+}
+
+NewCategoryGui::NewCategoryGui(QWidget *parent) : DialogGui(parent) {
+  setLayout(layout_);
+  PutFieldsOntoLayout();
+}
+
+QStringList NewCategoryGui::GetFields() {
+  QStringList answ;
+  answ << newCategory_->text() << codeForDb_->text();
+  return answ;
+}
+
+void NewCategoryGui::PutFieldsOntoLayout() {
+  layout_->addWidget(new QLabel("write category name", this), row_++, col_);
+  newCategory_ = new QLineEdit(this);
+  layout_->addWidget(newCategory_, row_++, col_);
+  layout_->addWidget(new QLabel("write category code", this), row_++, col_);
+  codeForDb_ = new QLineEdit(this);
+  layout_->addWidget(codeForDb_, row_++, col_);
   layout_->addWidget(ok_, row_, col_++);
   layout_->addWidget(cancel_, row_++, col_--);
 }

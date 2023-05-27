@@ -308,6 +308,12 @@ void MainWindow::WriteToDb(QStringList &answer) {
   }
 }
 
+// describe table
+//| Field     | Type        | Null | Key | Default | Extra          |
+//+-----------+-------------+------+-----+---------+----------------+
+//| id        | int         | NO   | PRI | NULL    | auto_increment |
+//| name      | varchar(64) | NO   |     | NULL    |                |
+//| shortName | char(2)     | NO   | UNI | NULL    |
 void MainWindow::FillCategoryFromDb() {
   QSqlQuery query;
   query.exec(QString("SELECT * FROM category;"));
